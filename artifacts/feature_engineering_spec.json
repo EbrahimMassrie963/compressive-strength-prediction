@@ -1,0 +1,63 @@
+{
+  "ratio_features": {
+    "Water/Cement Ratio": "Water / Cement",
+    "Total Binder": "Cement + Blast Furnace Slag + Fly Ash",
+    "Water/Binder Ratio": "Water / Total Binder",
+    "Superplasticizer/Binder Ratio": "Superplasticizer / Total Binder",
+    "Coarse/Fine Aggregate Ratio": "Coarse Aggregate / Fine Aggregate"
+  },
+  "selected_interactions": [
+    [
+      "Age (day)",
+      "Superplasticizer (component 5)(kg in a m^3 mixture)"
+    ],
+    [
+      "Cement (component 1)(kg in a m^3 mixture)",
+      "Superplasticizer (component 5)(kg in a m^3 mixture)"
+    ],
+    [
+      "Cement (component 1)(kg in a m^3 mixture)",
+      "Age (day)"
+    ],
+    [
+      "Cement (component 1)(kg in a m^3 mixture)",
+      "Water  (component 4)(kg in a m^3 mixture)"
+    ],
+    [
+      "Water  (component 4)(kg in a m^3 mixture)",
+      "Superplasticizer (component 5)(kg in a m^3 mixture)"
+    ]
+  ],
+  "engineered_feature_names": [
+    "Cement (component 1)(kg in a m^3 mixture)",
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+    "Fly Ash (component 3)(kg in a m^3 mixture)",
+    "Water  (component 4)(kg in a m^3 mixture)",
+    "Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+    "Age (day)",
+    "Curing Temperature (Celsius)",
+    "Water/Cement Ratio",
+    "Total Binder",
+    "Water/Binder Ratio",
+    "Superplasticizer/Binder Ratio",
+    "Coarse/Fine Aggregate Ratio",
+    "Age (day) x Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Cement (component 1)(kg in a m^3 mixture) x Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Cement (component 1)(kg in a m^3 mixture) x Age (day)",
+    "Cement (component 1)(kg in a m^3 mixture) x Water  (component 4)(kg in a m^3 mixture)",
+    "Water  (component 4)(kg in a m^3 mixture) x Superplasticizer (component 5)(kg in a m^3 mixture)"
+  ],
+  "original_feature_names": [
+    "Cement (component 1)(kg in a m^3 mixture)",
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+    "Fly Ash (component 3)(kg in a m^3 mixture)",
+    "Water  (component 4)(kg in a m^3 mixture)",
+    "Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+    "Age (day)",
+    "Curing Temperature (Celsius)"
+  ]
+}

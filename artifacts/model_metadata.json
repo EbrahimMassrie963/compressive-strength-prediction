@@ -1,0 +1,242 @@
+{
+  "target_column": "Concrete compressive strength(MPa, megapascals) ",
+  "feature_names": [
+    "Cement (component 1)(kg in a m^3 mixture)",
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+    "Fly Ash (component 3)(kg in a m^3 mixture)",
+    "Water  (component 4)(kg in a m^3 mixture)",
+    "Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+    "Age (day)",
+    "Curing Temperature (Celsius)"
+  ],
+  "best_model_name": "Gradient Boosting",
+  "best_model_path": "models/best_model.joblib",
+  "scaler_path": "scalers/standard_scaler.joblib",
+  "preprocessing": "StandardScaler fitted on training set; apply to raw feature vector before prediction",
+  "test_metrics": {
+    "model": "Gradient Boosting",
+    "test_r2": 0.9151084947504643,
+    "test_rmse": 4.433880109040119,
+    "test_mae": 3.1460869997189156,
+    "test_mape": 0.10734077410503436
+  },
+  "cv_leaderboard": [
+    {
+      "model": "LightGBM",
+      "cv_r2_mean": 0.9064789387310228,
+      "cv_r2_std": 0.01600876362772619,
+      "cv_rmse_mean": 4.841991532859547,
+      "cv_rmse_std": 0.41666116793921937,
+      "cv_time_sec": 0.64
+    },
+    {
+      "model": "XGBoost",
+      "cv_r2_mean": 0.8943484957845875,
+      "cv_r2_std": 0.026342826470057226,
+      "cv_rmse_mean": 5.122740613742211,
+      "cv_rmse_std": 0.5356735836847958,
+      "cv_time_sec": 4.46
+    },
+    {
+      "model": "Gradient Boosting",
+      "cv_r2_mean": 0.8902781521288061,
+      "cv_r2_std": 0.02144446605008604,
+      "cv_rmse_mean": 5.2383109061727,
+      "cv_rmse_std": 0.5129394432412672,
+      "cv_time_sec": 2.41
+    },
+    {
+      "model": "MLP Regressor",
+      "cv_r2_mean": 0.8863693845798675,
+      "cv_r2_std": 0.017649258481506242,
+      "cv_rmse_mean": 5.339260934326598,
+      "cv_rmse_std": 0.4364749869153498,
+      "cv_time_sec": 52.97
+    },
+    {
+      "model": "Random Forest",
+      "cv_r2_mean": 0.8819215945645056,
+      "cv_r2_std": 0.023738774347511944,
+      "cv_rmse_mean": 5.433179764935074,
+      "cv_rmse_std": 0.532523525966027,
+      "cv_time_sec": 4.78
+    },
+    {
+      "model": "Decision Tree",
+      "cv_r2_mean": 0.7705614825673781,
+      "cv_r2_std": 0.02852652786836681,
+      "cv_rmse_mean": 7.594589132527162,
+      "cv_rmse_std": 0.473396861567115,
+      "cv_time_sec": 0.1
+    },
+    {
+      "model": "KNN Regressor",
+      "cv_r2_mean": 0.635003526951906,
+      "cv_r2_std": 0.028311952169521454,
+      "cv_rmse_mean": 9.588146578026434,
+      "cv_rmse_std": 0.3511582757631308,
+      "cv_time_sec": 0.07
+    },
+    {
+      "model": "SVR (RBF kernel)",
+      "cv_r2_mean": 0.6062359436861197,
+      "cv_r2_std": 0.0183269118879798,
+      "cv_rmse_mean": 9.968508747808967,
+      "cv_rmse_std": 0.3719199708747005,
+      "cv_time_sec": 0.32
+    },
+    {
+      "model": "Ridge Regression",
+      "cv_r2_mean": 0.5977654204338583,
+      "cv_r2_std": 0.04828600188881079,
+      "cv_rmse_mean": 10.052193040538812,
+      "cv_rmse_std": 0.4922247321187769,
+      "cv_time_sec": 0.05
+    },
+    {
+      "model": "Linear Regression",
+      "cv_r2_mean": 0.5977604421679599,
+      "cv_r2_std": 0.04847551209531411,
+      "cv_rmse_mean": 10.052145904828851,
+      "cv_rmse_std": 0.49471364107741544,
+      "cv_time_sec": 0.05
+    },
+    {
+      "model": "Lasso Regression",
+      "cv_r2_mean": 0.5509606333558794,
+      "cv_r2_std": 0.040365193853414416,
+      "cv_rmse_mean": 10.631432262861138,
+      "cv_rmse_std": 0.4129418072141746,
+      "cv_time_sec": 0.05
+    },
+    {
+      "model": "ElasticNet",
+      "cv_r2_mean": 0.48521328961090615,
+      "cv_r2_std": 0.021719162854588487,
+      "cv_rmse_mean": 11.395285954405372,
+      "cv_rmse_std": 0.30247590394210533,
+      "cv_time_sec": 0.05
+    }
+  ],
+  "tuned_test_leaderboard": [
+    {
+      "model": "Gradient Boosting",
+      "test_r2": 0.9151084947504643,
+      "test_rmse": 4.433880109040119,
+      "test_mae": 3.1460869997189156,
+      "test_mape": 0.10734077410503436
+    },
+    {
+      "model": "LightGBM",
+      "test_r2": 0.9131255162483151,
+      "test_rmse": 4.485366622703339,
+      "test_mae": 3.1359470527827287,
+      "test_mape": 0.10630171203841278
+    },
+    {
+      "model": "XGBoost",
+      "test_r2": 0.9107015774815478,
+      "test_rmse": 4.54751062120641,
+      "test_mae": 3.118034297915553,
+      "test_mape": 0.10454387383527419
+    }
+  ],
+  "tuning_summary": [
+    {
+      "model": "LightGBM",
+      "best_params": {
+        "subsample": 1.0,
+        "num_leaves": 31,
+        "n_estimators": 800,
+        "max_depth": 5,
+        "learning_rate": 0.05
+      },
+      "best_cv_r2": 0.9153333970290427
+    },
+    {
+      "model": "XGBoost",
+      "best_params": {
+        "subsample": 0.7,
+        "n_estimators": 500,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "colsample_bytree": 0.7
+      },
+      "best_cv_r2": 0.9236284114044157
+    },
+    {
+      "model": "Gradient Boosting",
+      "best_params": {
+        "subsample": 0.85,
+        "n_estimators": 500,
+        "max_depth": 3,
+        "learning_rate": 0.1
+      },
+      "best_cv_r2": 0.9155453820120879
+    }
+  ],
+  "feature_ranking": [
+    {
+      "feature": "Age (day)",
+      "abs_correlation": 0.32996822366655804,
+      "mutual_info": 0.2805272841807698,
+      "rf_importance": 0.32346084211718223
+    },
+    {
+      "feature": "Cement (component 1)(kg in a m^3 mixture)",
+      "abs_correlation": 0.4926746892512767,
+      "mutual_info": 0.21046088042975564,
+      "rf_importance": 0.31728377685233755
+    },
+    {
+      "feature": "Water  (component 4)(kg in a m^3 mixture)",
+      "abs_correlation": 0.2833425724601566,
+      "mutual_info": 0.22438848651241772,
+      "rf_importance": 0.12032575195493708
+    },
+    {
+      "feature": "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+      "abs_correlation": 0.15839049972351388,
+      "mutual_info": 0.08601113350916867,
+      "rf_importance": 0.07519350311770172
+    },
+    {
+      "feature": "Superplasticizer (component 5)(kg in a m^3 mixture)",
+      "abs_correlation": 0.3591648088286367,
+      "mutual_info": 0.13322518862921084,
+      "rf_importance": 0.05743944319081697
+    },
+    {
+      "feature": "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+      "abs_correlation": 0.15352198210651685,
+      "mutual_info": 0.07705622312335692,
+      "rf_importance": 0.033842472097560375
+    },
+    {
+      "feature": "Curing Temperature (Celsius)",
+      "abs_correlation": 0.07045244847372968,
+      "mutual_info": 0.024773204023905038,
+      "rf_importance": 0.028000130931422694
+    },
+    {
+      "feature": "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+      "abs_correlation": 0.17503137087025922,
+      "mutual_info": 0.09717772151477444,
+      "rf_importance": 0.02611694273740296
+    },
+    {
+      "feature": "Fly Ash (component 3)(kg in a m^3 mixture)",
+      "abs_correlation": 0.15418412523252162,
+      "mutual_info": 0.07656039273927151,
+      "rf_importance": 0.018337137000638465
+    }
+  ],
+  "random_seed": 42,
+  "train_test_split": {
+    "test_size": 0.2,
+    "n_train": 824,
+    "n_test": 206
+  }
+}

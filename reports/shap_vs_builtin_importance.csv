@@ -1,0 +1,10 @@
+,shap_mean_abs,builtin_importance
+Age (day),7.538315928324611,0.3478157650964853
+Cement (component 1)(kg in a m^3 mixture),5.692796563063704,0.28551320327760654
+Water  (component 4)(kg in a m^3 mixture),3.7036574969595533,0.10252781191053607
+Blast Furnace Slag (component 2)(kg in a m^3 mixture),3.281710880374229,0.08628394270158131
+Superplasticizer (component 5)(kg in a m^3 mixture),2.031277224687469,0.07783579738492825
+Curing Temperature (Celsius),1.5900449707658988,0.026594138280482914
+Fine Aggregate (component 7)(kg in a m^3 mixture),1.3919319378367854,0.03870160515313086
+Coarse Aggregate  (component 6)(kg in a m^3 mixture),0.9200051027229411,0.020305244059746142
+Fly Ash (component 3)(kg in a m^3 mixture),0.4280940775073727,0.014422492135502585

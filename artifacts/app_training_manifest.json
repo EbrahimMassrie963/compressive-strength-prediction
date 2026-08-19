@@ -1,0 +1,117 @@
+{
+  "generated_by": "app/scripts/train_no_temperature_models.py",
+  "random_seed": 42,
+  "test_size": 0.2,
+  "methodology": "Replicates the notebook pipeline: identical split and seed, StandardScaler fitted on the training split, consensus outlier removal (IsolationForest 0.05 + LOF n_neighbors=20, 0.05) applied to the training split only, and the tuned hyperparameters recorded in artifacts/model_metadata.json.",
+  "families": {
+    "no_temp": {
+      "suffix": "no_temp",
+      "feature_names": [
+        "Cement (component 1)(kg in a m^3 mixture)",
+        "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+        "Fly Ash (component 3)(kg in a m^3 mixture)",
+        "Water  (component 4)(kg in a m^3 mixture)",
+        "Superplasticizer (component 5)(kg in a m^3 mixture)",
+        "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+        "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+        "Age (day)"
+      ],
+      "target_column": "Concrete compressive strength(MPa, megapascals) ",
+      "scaler_path": "scalers/standard_scaler_no_temp.joblib",
+      "n_train": 824,
+      "n_train_after_outlier_removal": 821,
+      "n_test": 206,
+      "n_consensus_outliers_removed": 3,
+      "models": {
+        "gradient_boosting": {
+          "path": "models/gradient_boosting_no_temp.joblib",
+          "params": {
+            "learning_rate": 0.1,
+            "max_depth": 3,
+            "n_estimators": 500,
+            "subsample": 0.85
+          },
+          "test_r2": 0.9326143554817479,
+          "test_rmse": 4.1670140630151025,
+          "test_mae": 2.882596469367909,
+          "test_mape": 0.09388387691381442,
+          "cv_r2_mean": 0.9389342626089328,
+          "cv_r2_std": 0.003510775366924808
+        },
+        "lightgbm": {
+          "path": "models/lightgbm_no_temp.joblib",
+          "params": {
+            "learning_rate": 0.05,
+            "max_depth": 5,
+            "n_estimators": 800,
+            "num_leaves": 31,
+            "subsample": 1.0
+          },
+          "test_r2": 0.9335982455575143,
+          "test_rmse": 4.136481153840477,
+          "test_mae": 2.9167487441023714,
+          "test_mape": 0.0968966300087467,
+          "cv_r2_mean": 0.9373337317060761,
+          "cv_r2_std": 0.006593077639131575
+        },
+        "xgboost": {
+          "path": "models/xgboost_no_temp.joblib",
+          "params": {
+            "colsample_bytree": 0.7,
+            "learning_rate": 0.1,
+            "max_depth": 4,
+            "n_estimators": 500,
+            "subsample": 0.7
+          },
+          "test_r2": 0.9412128511391488,
+          "test_rmse": 3.8920863922062043,
+          "test_mae": 2.614654392740792,
+          "test_mape": 0.084449454443356,
+          "cv_r2_mean": 0.940479002711427,
+          "cv_r2_std": 0.004805989659954454
+        }
+      },
+      "interval_model": {
+        "lower_path": "models/interval_q05_no_temp.joblib",
+        "upper_path": "models/interval_q95_no_temp.joblib",
+        "method": "Conformalized Quantile Regression \u2014 Gradient Boosting quantile regressors (alpha = 0.05 / 0.95) calibrated by split conformal prediction on a held-out 25% of the training split",
+        "conformal_correction_mpa": 2.4040659356710137,
+        "n_calibration": 206,
+        "target_coverage": 0.9,
+        "empirical_coverage": 0.9368932038834952,
+        "mean_interval_width_mpa": 21.35273057719913
+      }
+    },
+    "with_temp": {
+      "suffix": "with_temp",
+      "feature_names": [
+        "Cement (component 1)(kg in a m^3 mixture)",
+        "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+        "Fly Ash (component 3)(kg in a m^3 mixture)",
+        "Water  (component 4)(kg in a m^3 mixture)",
+        "Superplasticizer (component 5)(kg in a m^3 mixture)",
+        "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+        "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+        "Age (day)",
+        "Curing Temperature (Celsius)"
+      ],
+      "target_column": "Concrete compressive strength(MPa, megapascals) ",
+      "scaler_path": "scalers/standard_scaler.joblib",
+      "n_train": 824,
+      "n_train_after_outlier_removal": 813,
+      "n_test": 206,
+      "n_consensus_outliers_removed": 11,
+      "models": {},
+      "interval_model": {
+        "lower_path": "models/interval_q05_with_temp.joblib",
+        "upper_path": "models/interval_q95_with_temp.joblib",
+        "method": "Conformalized Quantile Regression \u2014 Gradient Boosting quantile regressors (alpha = 0.05 / 0.95) calibrated by split conformal prediction on a held-out 25% of the training split",
+        "conformal_correction_mpa": 2.3544358565552415,
+        "n_calibration": 204,
+        "target_coverage": 0.9,
+        "empirical_coverage": 0.9029126213592233,
+        "mean_interval_width_mpa": 21.188874962730537
+      }
+    }
+  }
+}

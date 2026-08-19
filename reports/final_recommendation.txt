@@ -1,0 +1,27 @@
+
+FINAL RECOMMENDATION — Concrete Compressive Strength Prediction
+================================================================
+
+1. SELECTED MODEL
+   Champion: Gradient Boosting (outliers removed, original features)
+   Test R^2:   0.9159  (bootstrap 95% CI: [0.8845, 0.9398])
+   Test RMSE:  4.414 MPa  (bootstrap 95% CI: [3.770, 5.098] MPa)
+   Repeated K-Fold mean R^2 (25 folds): 0.9179
+
+2. DID OUTLIER REMOVAL HELP?
+   R^2 change after removing consensus (Isolation Forest + LOF) outliers: +0.0008
+   RMSE change: -0.020 MPa
+   Verdict: outlier removal IMPROVED held-out performance.
+
+3. DID ENSEMBLE LEARNING HELP?
+   Best individual model test R^2: 0.9159
+   Best ensemble (Voting/Stacking) test R^2: 0.9156
+   Verdict: ensembling DID NOT beat every individual model on the test set.
+
+4. UNCERTAINTY
+   90%-target prediction interval empirical coverage: 88.8%
+   Mean interval width: 15.95 MPa
+
+5. EXPLAINABILITY
+   Model explained via SHAP: Gradient Boosting (outliers removed, original features)
+   Top drivers of predicted strength (by mean |SHAP value|): Age (day), Cement (component 1)(kg in a m^3 mixture), Water  (component 4)(kg in a m^3 mixture), Blast Furnace Slag (component 2)(kg in a m^3 mixture)

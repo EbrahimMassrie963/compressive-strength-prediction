@@ -1,0 +1,43 @@
+{
+  "n_rows": 1030,
+  "n_columns": 10,
+  "missing_values_total": 0,
+  "duplicate_rows": 0,
+  "target_column": "Concrete compressive strength(MPa, megapascals) ",
+  "target_stats": {
+    "mean": 33.78115503732946,
+    "std": 15.818027698557502,
+    "min": 2.05199089216,
+    "max": 82.5992248,
+    "skewness": 0.4455187949140526
+  },
+  "target_correlation_ranking": {
+    "Cement (component 1)(kg in a m^3 mixture)": 0.4916,
+    "Superplasticizer (component 5)(kg in a m^3 mixture)": 0.3691,
+    "Age (day)": 0.3299,
+    "Water  (component 4)(kg in a m^3 mixture)": -0.2866,
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)": -0.1677,
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)": -0.163,
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)": 0.1388,
+    "Fly Ash (component 3)(kg in a m^3 mixture)": -0.11,
+    "Curing Temperature (Celsius)": -0.0685
+  },
+  "outlier_counts_iqr": {
+    "Age (day)": 59,
+    "Superplasticizer (component 5)(kg in a m^3 mixture)": 10,
+    "Water  (component 4)(kg in a m^3 mixture)": 9,
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)": 5,
+    "Concrete compressive strength(MPa, megapascals) ": 5,
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)": 2,
+    "Cement (component 1)(kg in a m^3 mixture)": 0,
+    "Fly Ash (component 3)(kg in a m^3 mixture)": 0,
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)": 0,
+    "Curing Temperature (Celsius)": 0
+  },
+  "temperature_band_mean_strength": {
+    "20-<26 (no change)": 35.765,
+    "26-<31 (-2%)": 34.433,
+    "31-<36 (-5%)": 32.879,
+    "36-45 (-12%)": 32.547
+  }
+}

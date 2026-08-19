@@ -1,0 +1,74 @@
+{
+  "champion_model_name": "Gradient Boosting (outliers removed, original features)",
+  "learning_curve": {
+    "more_data_likely_to_help": true,
+    "final_train_val_gap": 0.07925556060999328,
+    "last_step_val_improvement": 0.008860013534243039
+  },
+  "error_by_strength_range": {
+    "worst_bin": "High (>40 MPa)",
+    "bias_direction": {
+      "Low (<20 MPa)": "no strong systematic bias",
+      "Medium (20-40 MPa)": "over-predicts",
+      "High (>40 MPa)": "under-predicts"
+    }
+  },
+  "feature_ablation": {
+    "most_important_feature": "Age (day)",
+    "r2_drop_top_feature": 0.5123697880778707,
+    "least_important_feature": "Fly Ash (component 3)(kg in a m^3 mixture)"
+  },
+  "importance_method_agreement": {
+    "spearman_perm_vs_shap": 0.9500000000000001,
+    "spearman_perm_vs_ablation": 0.6666666666666667,
+    "spearman_shap_vs_ablation": 0.7833333333333333,
+    "strong_agreement": true
+  },
+  "statistical_significance": {
+    "any_competitor_significantly_beaten": true,
+    "all_competitors_significantly_beaten": false,
+    "details": [
+      {
+        "competitor": "Random Forest",
+        "champion_mean_r2": 0.918916674094535,
+        "competitor_mean_r2": 0.8882591719645532,
+        "mean_difference": 0.030657502129981862,
+        "paired_ttest_p": 6.458171904393964e-20,
+        "wilcoxon_p": 1.7763568394002505e-15,
+        "significant_at_0.05": true
+      },
+      {
+        "competitor": "XGBoost",
+        "champion_mean_r2": 0.918916674094535,
+        "competitor_mean_r2": 0.9209759322346107,
+        "mean_difference": -0.0020592581400756815,
+        "paired_ttest_p": 0.09387893583694235,
+        "wilcoxon_p": 0.09709384967839618,
+        "significant_at_0.05": false
+      },
+      {
+        "competitor": "LightGBM",
+        "champion_mean_r2": 0.918916674094535,
+        "competitor_mean_r2": 0.9152153928254149,
+        "mean_difference": 0.0037012812691201713,
+        "paired_ttest_p": 0.01018034578999126,
+        "wilcoxon_p": 0.02122367163684835,
+        "significant_at_0.05": true
+      }
+    ]
+  },
+  "robustness": {
+    "n_folds": 50,
+    "mean_r2": 0.918916674094535,
+    "std_r2": 0.016227904575908666,
+    "95_percent_ci": [
+      0.914304754642777,
+      0.923528593546293
+    ],
+    "coefficient_of_variation": 0.01765982165020459,
+    "min_r2": 0.8702435083363994,
+    "max_r2": 0.9517058410024424
+  },
+  "random_seed": 42,
+  "dataset_size": 1030
+}

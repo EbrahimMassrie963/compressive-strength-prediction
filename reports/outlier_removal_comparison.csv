@@ -1,0 +1,3 @@
+scenario,n_train_rows,test_r2,test_rmse,test_mae
+With outliers (Notebook 3 baseline),824,0.9151084947504643,4.433880109040119,3.1460869997189156
+Consensus outliers removed,813,0.9158639118175605,4.4141083229333296,3.1084785859775588

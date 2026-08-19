@@ -1,0 +1,80 @@
+{
+  "champion_model_name": "Gradient Boosting (outliers removed, original features)",
+  "champion_model_path": "models/final_deployed_model.joblib",
+  "requires_feature_engineering": false,
+  "scaler_path": "scalers/standard_scaler.joblib",
+  "feature_names": [
+    "Cement (component 1)(kg in a m^3 mixture)",
+    "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+    "Fly Ash (component 3)(kg in a m^3 mixture)",
+    "Water  (component 4)(kg in a m^3 mixture)",
+    "Superplasticizer (component 5)(kg in a m^3 mixture)",
+    "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+    "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+    "Age (day)",
+    "Curing Temperature (Celsius)"
+  ],
+  "target_column": "Concrete compressive strength(MPa, megapascals) ",
+  "test_metrics": {
+    "r2": 0.9158639118175605,
+    "rmse": 4.4141083229333296,
+    "r2_95_ci": [
+      0.8844857677761172,
+      0.9397512559402372
+    ],
+    "rmse_95_ci": [
+      3.7701251382920833,
+      5.097952307867144
+    ]
+  },
+  "uncertainty_model": {
+    "path": "models/uncertainty_interval_rf.joblib",
+    "scaler_path": "scalers/engineered_features_scaler.joblib",
+    "feature_names": [
+      "Cement (component 1)(kg in a m^3 mixture)",
+      "Blast Furnace Slag (component 2)(kg in a m^3 mixture)",
+      "Fly Ash (component 3)(kg in a m^3 mixture)",
+      "Water  (component 4)(kg in a m^3 mixture)",
+      "Superplasticizer (component 5)(kg in a m^3 mixture)",
+      "Coarse Aggregate  (component 6)(kg in a m^3 mixture)",
+      "Fine Aggregate (component 7)(kg in a m^3 mixture)",
+      "Age (day)",
+      "Curing Temperature (Celsius)",
+      "Water/Cement Ratio",
+      "Total Binder",
+      "Water/Binder Ratio",
+      "Superplasticizer/Binder Ratio",
+      "Coarse/Fine Aggregate Ratio",
+      "Age (day) x Superplasticizer (component 5)(kg in a m^3 mixture)",
+      "Cement (component 1)(kg in a m^3 mixture) x Superplasticizer (component 5)(kg in a m^3 mixture)",
+      "Cement (component 1)(kg in a m^3 mixture) x Age (day)",
+      "Cement (component 1)(kg in a m^3 mixture) x Water  (component 4)(kg in a m^3 mixture)",
+      "Water  (component 4)(kg in a m^3 mixture) x Superplasticizer (component 5)(kg in a m^3 mixture)"
+    ],
+    "method": "Empirical percentile interval from per-tree Random Forest predictions",
+    "target_coverage": 0.9,
+    "empirical_coverage": 0.8883495145631068,
+    "mean_interval_width_mpa": 15.954517572320547
+  },
+  "outlier_analysis": {
+    "removal_improved_performance": true,
+    "r2_delta": 0.0007554170670962534,
+    "rmse_delta": -0.019771786106789868
+  },
+  "ensemble_analysis": {
+    "ensemble_beat_all_individual_models": false
+  },
+  "explainability": {
+    "shap_model_name": "Gradient Boosting (outliers removed, original features)",
+    "top_features_by_shap": [
+      "Age (day)",
+      "Cement (component 1)(kg in a m^3 mixture)",
+      "Water  (component 4)(kg in a m^3 mixture)",
+      "Blast Furnace Slag (component 2)(kg in a m^3 mixture)"
+    ]
+  },
+  "random_seed": 42,
+  "dataset_size": 1030,
+  "notes": "Curing temperature is a synthetic feature (see Notebook 1) \u2014 treat any conclusions involving it as illustrative of the pipeline, not a physically validated effect, until replaced with measured data.",
+  "example_inference_pseudocode": "scaler = joblib.load(scaler_path); model = joblib.load(champion_model_path); X_new = engineer_features(raw_input_df) if requires_feature_engineering else raw_input_df; prediction = model.predict(scaler.transform(X_new[feature_names]))"
+}
