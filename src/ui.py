@@ -2,6 +2,16 @@
 
 from __future__ import annotations
 
+# numpy and pandas are imported for their side effect, not their API.
+# Plotly's validators reach for whatever is already in sys.modules
+# (`get_module(..., should_load=False)`) and then touch `pd.Series` /
+# `np.isscalar` directly. If another Streamlit thread happens to be part-way
+# through importing pandas at that moment, they get a half-built module and the
+# app dies with "partially initialized module 'pandas' has no attribute
+# 'Series'". Importing here blocks on Python's per-module import lock until the
+# module is complete, so plotly can only ever see a finished one.
+import numpy  # noqa: F401
+import pandas  # noqa: F401
 import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
