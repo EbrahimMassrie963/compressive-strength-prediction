@@ -72,7 +72,7 @@ with tab_activity:
             line=dict(color=ui.SERIES[0], width=2),
             marker=dict(size=8, line=dict(width=1, color=ui.SURFACE)),
             fill="tozeroy",
-            fillcolor="rgba(42,120,214,0.10)",
+            fillcolor="rgba(0,173,131,0.12)",
             hovertemplate="%{x}<br>%{y}<extra></extra>",
         )
     )
@@ -83,6 +83,16 @@ with tab_activity:
         showlegend=False,
     )
     ui.chart(fig)
+    busiest = counts.idxmax()
+    ui.explain(
+        t("what_stats_time"),
+        t("insight_stats_time").format(
+            total=totals["total_events"],
+            days=f"{max(span_days, 0.01):.1f}",
+            peak=int(counts.max()),
+            when=busiest.strftime("%d %b %H:%M") if rule == "h" else busiest.strftime("%d %b"),
+        ),
+    )
 
     left, right = st.columns(2)
 
@@ -178,6 +188,15 @@ with tab_activity:
         showlegend=False,
     )
     ui.chart(fig)
+    ui.explain(
+        t("what_stats_model") + " " + t("what_stats_hourly"),
+        t("insight_stats_usage").format(
+            model=model_name(by_model.idxmax()),
+            share=f"{by_model.max() / by_model.sum() * 100:.0f}",
+            family=config.FAMILIES.get(by_family.idxmax(), {}).get("label", "-"),
+            hour=int(hours.idxmax()),
+        ),
+    )
 
 # ---------------------------------------------------------------------------
 # Prediction profile
@@ -192,7 +211,7 @@ with tab_profile:
             name="training data",
             histnorm="probability density",
             nbinsx=40,
-            marker=dict(color="#c9c7c2", line=dict(width=0)),
+            marker=dict(color=ui.NEUTRAL_MARK, line=dict(width=0)),
             opacity=0.85,
             hovertemplate="%{x:.0f} MPa<extra>training data</extra>",
         )
@@ -217,7 +236,19 @@ with tab_profile:
         bargap=0.04,
     )
     ui.chart(fig)
-    st.caption(t("stats_pred_dist_note"))
+    ui.explain(
+        t("what_stats_dist"),
+        t("insight_stats_dist").format(
+            user_mean=f"{log['prediction'].mean():.1f}",
+            data_mean=f"{training_target.mean():.1f}",
+            direction=t("direction_higher")
+            if log["prediction"].mean() > training_target.mean()
+            else t("direction_lower"),
+            note=t("stats_dist_note_shifted")
+            if abs(log["prediction"].mean() - training_target.mean()) > 5
+            else t("stats_dist_note_aligned"),
+        ),
+    )
 
     classes = log["strength_class"].dropna().astype(str)
     if not classes.empty:
@@ -243,6 +274,15 @@ with tab_profile:
             showlegend=False,
         )
         ui.chart(fig)
+        ui.explain(
+            t("what_stats_class"),
+            t("insight_stats_class").format(
+                cls=counts.idxmax(),
+                n=int(counts.max()),
+                share=f"{counts.max() / counts.sum() * 100:.0f}",
+                distinct=int(len(counts)),
+            ),
+        )
 
     # How the mixes people test compare with the training population
     dataset = data.load_dataset("with_temp")
@@ -273,7 +313,7 @@ with tab_profile:
                 base=1,
                 marker=dict(
                     color=[
-                        ui.SERIES[0] if value >= 1 else ui.SERIES[7]
+                        ui.POSITIVE if value >= 1 else ui.NEGATIVE
                         for value in ratio_frame["ratio"]
                     ],
                     line=dict(width=0),
@@ -296,7 +336,17 @@ with tab_profile:
             showlegend=False,
         )
         ui.chart(fig)
-        st.caption(t("stats_input_note"))
+        highest = ratio_frame.iloc[-1]
+        lowest = ratio_frame.iloc[0]
+        ui.explain(
+            t("what_stats_input"),
+            t("insight_stats_input").format(
+                high=highest["label"],
+                high_ratio=f"{highest['ratio']:.2f}",
+                low=lowest["label"],
+                low_ratio=f"{lowest['ratio']:.2f}",
+            ),
+        )
 
 # ---------------------------------------------------------------------------
 # Real-world accuracy
@@ -405,6 +455,19 @@ with tab_accuracy:
                 height=420,
             )
             ui.chart(fig)
+
+        ui.explain(
+            t("what_stats_accuracy") + " " + t("what_stats_error"),
+            t("insight_stats_accuracy").format(
+                n=len(measured),
+                hit=f"{correct / len(measured) * 100:.0f}",
+                tolerance=f"{tolerance:.1f}",
+                mae=f"{measured['abs_error'].mean():.2f}",
+                bias=f"{bias:+.2f}",
+                direction=t("bias_over") if bias > 0.2
+                else t("bias_under") if bias < -0.2 else t("bias_none"),
+            ),
+        )
 
 # ---------------------------------------------------------------------------
 # Raw log

@@ -72,6 +72,19 @@ with tab_importance:
         )
         ui.chart(fig)
 
+        ranked = importance.sort_values("importance", ascending=False)
+        ui.explain(
+            t("what_builtin"),
+            t("insight_builtin").format(
+                model=spec.name,
+                top=label(ranked.iloc[0]["column"]),
+                share=f"{ranked.iloc[0]['importance']:.0%}",
+                top3=", ".join(label(c) for c in ranked["column"].head(3)),
+                top3share=f"{ranked['importance'].head(3).sum():.0%}",
+                least=label(ranked.iloc[-1]["column"]),
+            ),
+        )
+
     ablation = data.load_report_csv("feature_ablation_results.csv")
     if not ablation.empty:
         st.markdown("---")
@@ -99,6 +112,19 @@ with tab_importance:
             showlegend=False,
         )
         ui.chart(fig)
+
+        worst = ablation.iloc[-1]
+        mildest = ablation.iloc[0]
+        ui.explain(
+            t("what_ablation"),
+            t("insight_ablation").format(
+                top=label(worst["feature_removed"]),
+                drop=f"{worst['r2_drop']:.3f}",
+                remaining=f"{worst['r2_without_feature']:.3f}",
+                least=label(mildest["feature_removed"]),
+                least_drop=f"{mildest['r2_drop']:.4f}",
+            ),
+        )
 
 # ---------------------------------------------------------------------------
 # SHAP
@@ -131,6 +157,17 @@ with tab_shap:
             showlegend=False,
         )
         ui.chart(fig)
+
+        ranked_shap = shap_table.sort_values("shap_mean_abs", ascending=False)
+        ui.explain(
+            t("what_shap"),
+            t("insight_shap").format(
+                top=label(ranked_shap.iloc[0]["feature"]),
+                mpa=f"{ranked_shap.iloc[0]['shap_mean_abs']:.2f}",
+                second=label(ranked_shap.iloc[1]["feature"]),
+                second_mpa=f"{ranked_shap.iloc[1]['shap_mean_abs']:.2f}",
+            ),
+        )
 
     figures = data.figure_groups().get("advanced", [])
     shap_figures = [path for path in figures if "shap" in path.stem.lower()]
@@ -180,6 +217,21 @@ with tab_agreement:
             height=140 + 62 * len(normalised),
         )
         ui.chart(fig)
+
+        leaders = {
+            name: label(comparison.loc[comparison[column].idxmax(), "feature"])
+            for column, name in names.items()
+        }
+        agreed = len(set(leaders.values())) == 1
+        ui.explain(
+            t("what_agreement"),
+            t("insight_agreement").format(
+                verdict=t("agreement_yes").format(feature=next(iter(leaders.values())))
+                if agreed
+                else t("agreement_no"),
+                detail=" · ".join(f"{k}: {v}" for k, v in leaders.items()),
+            ),
+        )
 
     summary = data.load_artifact("notebook5_summary.json")
     agreement = summary.get("importance_method_agreement", {})
@@ -275,6 +327,22 @@ with tab_effects:
     )
     ui.chart(fig)
 
+    swing = float(curve.max() - curve.min())
+    best_at = float(grid[int(curve.argmax())])
+    ui.explain(
+        t("what_sweep"),
+        t("insight_sweep").format(
+            feature=label(sweep_column),
+            swing=f"{swing:.1f}",
+            low=f"{curve.min():.1f}",
+            high=f"{curve.max():.1f}",
+            best=f"{best_at:,.0f}",
+            shape=t("sweep_monotone")
+            if abs(best_at - float(grid[-1])) < (float(grid[-1]) - float(grid[0])) * 0.05
+            else t("sweep_peak"),
+        ),
+    )
+
     st.markdown("---")
     st.markdown(f"**{t('explain_2d_title')}**")
     st.caption(t("explain_2d_intro"))
@@ -312,7 +380,7 @@ with tab_effects:
             z=surface,
             x=x_grid,
             y=y_grid,
-            colorscale=[[i / 12, colour] for i, colour in enumerate(ui.SEQUENTIAL_BLUE)],
+            colorscale=ui.sequential_scale(),
             colorbar=dict(
                 title=dict(text=t("mpa"), font=dict(size=11)),
                 thickness=12, outlinewidth=0, len=0.85,
@@ -329,3 +397,16 @@ with tab_effects:
         height=480,
     )
     ui.chart(fig)
+
+    best_index = np.unravel_index(int(np.argmax(surface)), surface.shape)
+    ui.explain(
+        t("what_surface"),
+        t("insight_surface").format(
+            x=label(x_column),
+            y=label(y_column),
+            low=f"{surface.min():.1f}",
+            high=f"{surface.max():.1f}",
+            best_x=f"{x_grid[best_index[1]]:,.0f}",
+            best_y=f"{y_grid[best_index[0]]:,.0f}",
+        ),
+    )

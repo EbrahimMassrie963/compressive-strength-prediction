@@ -22,6 +22,31 @@ GitHub in order to deploy.
 | **Explainability** | Built-in importance, SHAP, permutation importance, feature ablation, method agreement, and a 1-D / 2-D effect explorer |
 | **Usage Statistics** | Activity, prediction profile, and real-world accuracy against user-reported laboratory measurements |
 
+Every chart carries a two-line reading guide: **what this shows**, and an
+**insight** recomputed from the numbers currently on screen — so it changes with
+the user's inputs rather than repeating a fixed sentence.
+
+## Interface
+
+Dark theme throughout. Inputs are typed numbers with stepper buttons, each
+annotated with the training range it came from and flagged in amber when the
+value leaves it.
+
+The chart palette is not decorative. It was checked with the data-viz palette
+validator against the dark chart surface (`#18222e`) and passes the lightness
+band, chroma floor, adjacent-pair colour-blind separation, normal-vision floor
+and contrast gates:
+
+```
+#00AD83  #3987E5  #C98500  #9085E9  #E66767  #008300
+```
+
+The first three additionally clear the stricter all-pairs gate, which is why no
+chart plots more than three series at once. Magnitude uses a single-hue teal
+ramp, never a rainbow; anything signed uses one fixed pair — blue for positive,
+red for negative — on every chart in the application, and reserved status
+colours are never reused as a series.
+
 ## Model families
 
 Users pick a family based on whether they have a curing-temperature value.
@@ -158,7 +183,7 @@ app/
 ├── views/                        one file per page
 ├── src/
 │   ├── config.py                 paths, feature definitions, model registry
-│   ├── strings.py                every user-facing string, in one place
+│   ├── strings.py                every user-facing string and insight template
 │   ├── data.py                   dataset and artifact access (cached)
 │   ├── models.py                 loading, prediction, intervals, evaluation
 │   ├── usage.py                  usage log

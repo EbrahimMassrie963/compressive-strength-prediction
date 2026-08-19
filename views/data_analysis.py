@@ -68,6 +68,17 @@ with tab_overview:
         height=360,
     )
     ui.chart(fig)
+    high_share = float((target > 60).mean() * 100)
+    ui.explain(
+        t("what_target_hist"),
+        t("insight_target_hist").format(
+            mean=f"{target.mean():.1f}",
+            median=f"{target.median():.1f}",
+            low=f"{target.min():.1f}",
+            high=f"{target.max():.1f}",
+            share=f"{high_share:.1f}",
+        ),
+    )
 
     st.markdown(f"**{t('data_summary_title')}**")
     summary = df.describe().T[["mean", "std", "min", "25%", "50%", "75%", "max"]]
@@ -129,6 +140,19 @@ with tab_dist:
         )
         ui.chart(fig)
 
+    zero_share = float((series == 0).mean() * 100)
+    ui.explain(
+        t("what_var_hist"),
+        t("insight_var_hist").format(
+            name=label(variable),
+            median=f"{series.median():,.1f}",
+            low=f"{series.min():,.1f}",
+            high=f"{series.max():,.1f}",
+            zeros=f"{zero_share:.0f}",
+            note=t("insight_var_zeros") if zero_share > 20 else t("insight_var_nozeros"),
+        ),
+    )
+
     stats_row = series.describe()
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("mean", f"{stats_row['mean']:.2f}")
@@ -163,7 +187,7 @@ with tab_rel:
     else:
         marker.update(
             color=df[colour_column],
-            colorscale=[[i / 12, c] for i, c in enumerate(ui.SEQUENTIAL_BLUE)],
+            colorscale=ui.sequential_scale(),
             showscale=True,
             colorbar=dict(
                 title=dict(text=label(colour_column), font=dict(size=11)),
@@ -209,6 +233,21 @@ with tab_rel:
     )
     ui.chart(fig)
 
+    strength = (
+        t("corr_strength_strong") if abs(correlation) >= 0.4
+        else t("corr_strength_moderate") if abs(correlation) >= 0.2
+        else t("corr_strength_weak")
+    )
+    ui.explain(
+        t("what_scatter"),
+        t("insight_scatter").format(
+            name=label(x_column),
+            r=f"{correlation:+.3f}",
+            strength=strength,
+            direction=t("direction_up") if correlation >= 0 else t("direction_down"),
+        ),
+    )
+
     # Temperature bands, the check that the synthetic feature behaves as designed
     st.markdown(f"**{t('data_temp_band_title')}**")
     bands = pd.cut(
@@ -236,6 +275,15 @@ with tab_rel:
         yaxis_range=[0, band_means.max() * 1.2],
     )
     ui.chart(fig)
+    ui.explain(
+        t("what_temp_bands"),
+        t("insight_temp_bands").format(
+            hottest=f"{band_means.iloc[-1]:.1f}",
+            coolest=f"{band_means.iloc[0]:.1f}",
+            drop=f"{band_means.iloc[0] - band_means.iloc[-1]:.1f}",
+            pct=f"{(1 - band_means.iloc[-1] / band_means.iloc[0]) * 100:.0f}",
+        ),
+    )
 
 # ---------------------------------------------------------------------------
 # Correlation
@@ -263,6 +311,18 @@ with tab_corr:
     fig.update_yaxes(showgrid=False, autorange="reversed")
     ui.chart(fig)
 
+    off_diagonal = corr.where(~np.eye(len(corr), dtype=bool))
+    strongest_pair = off_diagonal.abs().stack().idxmax()
+    strongest_value = float(corr.loc[strongest_pair[0], strongest_pair[1]])
+    ui.explain(
+        t("what_corr_matrix"),
+        t("insight_corr_matrix").format(
+            a=label(strongest_pair[0]),
+            b=label(strongest_pair[1]),
+            r=f"{strongest_value:+.2f}",
+        ),
+    )
+
     target_corr = (
         corr[config.TARGET_COL].drop(config.TARGET_COL).sort_values()
     )
@@ -272,7 +332,7 @@ with tab_corr:
             y=[label(c) for c in target_corr.index],
             orientation="h",
             marker=dict(
-                color=[ui.SERIES[0] if v >= 0 else ui.SERIES[7] for v in target_corr],
+                color=[ui.POSITIVE if v >= 0 else ui.NEGATIVE for v in target_corr],
                 line=dict(width=0),
             ),
             text=[f"{v:+.2f}" for v in target_corr],
@@ -292,6 +352,15 @@ with tab_corr:
     fig.add_vline(x=0, line_width=1, line_color=ui.BORDER)
     ui.chart(fig)
 
+    ui.explain(
+        t("what_corr_target"),
+        t("insight_corr_target").format(
+            top=label(target_corr.abs().idxmax()),
+            r=f"{target_corr[target_corr.abs().idxmax()]:+.2f}",
+            positive=", ".join(label(c) for c in target_corr[target_corr > 0].index[-2:]),
+            negative=", ".join(label(c) for c in target_corr[target_corr < 0].index[:2]),
+        ),
+    )
     st.info(t("data_corr_note"))
 
 # ---------------------------------------------------------------------------

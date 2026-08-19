@@ -56,7 +56,7 @@ with tab_live:
             orientation="h",
             marker=dict(
                 color=[
-                    ui.SERIES[0] if champion else "#c9c7c2"
+                    ui.SERIES[0] if champion else ui.NEUTRAL_MARK
                     for champion in ordered["is_champion"]
                 ],
                 line=dict(width=0),
@@ -75,6 +75,19 @@ with tab_live:
         showlegend=False,
     )
     ui.chart(fig)
+
+    best = scores.iloc[0]
+    worst = scores.iloc[-1]
+    ui.explain(
+        t("what_live_r2"),
+        t("insight_live_r2").format(
+            best=model_name(best["key"]),
+            r2=f"{best['r2']:.3f}",
+            rmse=f"{best['rmse']:.2f}",
+            spread=f"{best['r2'] - worst['r2']:.3f}",
+            within=f"{best['within_5']:.0f}",
+        ),
+    )
 
     st.markdown("---")
     st.markdown(f"**{t('perf_select_model')}**")
@@ -167,6 +180,21 @@ with tab_live:
     )
     ui.chart(fig)
 
+    selected_row = scores[scores["key"] == selected_key].iloc[0]
+    bias = float(frame["residual"].mean())
+    ui.explain(
+        t("what_pred_actual") + " " + t("what_resid_vs_pred"),
+        t("insight_residuals").format(
+            model=model_name(selected_key),
+            mae=f"{selected_row['mae']:.2f}",
+            within=f"{selected_row['within_5']:.0f}",
+            bias=f"{bias:+.2f}",
+            direction=t("bias_under") if bias > 0.2
+            else t("bias_over") if bias < -0.2 else t("bias_none"),
+            worst=f"{frame['abs_error'].max():.1f}",
+        ),
+    )
+
     # --- Interval calibration -------------------------------------------
     st.markdown("---")
     st.markdown(f"**{t('perf_interval_title')}**")
@@ -218,6 +246,17 @@ with tab_boards:
             showlegend=False,
         )
         ui.chart(fig)
+        top_row = cv_board.iloc[-1]
+        linear = cv_board[cv_board["model"].str.contains("Linear")]
+        ui.explain(
+            t("what_cv_board"),
+            t("insight_cv_board").format(
+                best=top_row["model"],
+                r2=f"{top_row['cv_r2_mean']:.3f}",
+                linear=f"{linear['cv_r2_mean'].iloc[0]:.3f}" if not linear.empty else "0.60",
+                n=len(cv_board),
+            ),
+        )
 
     tuned = pd.DataFrame(metadata.get("tuned_test_leaderboard", []))
     if not tuned.empty:
@@ -259,6 +298,17 @@ with tab_diag:
             height=400,
         )
         ui.chart(fig)
+        final_gap = float(curve["train_r2_mean"].iloc[-1] - curve["val_r2_mean"].iloc[-1])
+        last_gain = float(curve["val_r2_mean"].iloc[-1] - curve["val_r2_mean"].iloc[-2])
+        ui.explain(
+            t("what_learning"),
+            t("insight_learning").format(
+                gap=f"{final_gap:.3f}",
+                gain=f"{last_gain:.4f}",
+                verdict=t("learning_more_helps") if last_gain > 0.002
+                else t("learning_plateau"),
+            ),
+        )
         st.info(t("perf_learning_note"))
 
     ranges = data.load_report_csv("error_by_strength_range_summary.csv")
@@ -294,7 +344,7 @@ with tab_diag:
                 y=ranges["mean_error"],
                 marker=dict(
                     color=[
-                        ui.SERIES[0] if value >= 0 else ui.SERIES[7]
+                        ui.POSITIVE if value >= 0 else ui.NEGATIVE
                         for value in ranges["mean_error"]
                     ],
                     line=dict(width=0),
@@ -314,6 +364,19 @@ with tab_diag:
             showlegend=False,
         )
         ui.chart(bias)
+        worst_row = ranges.loc[ranges["rmse"].idxmax()]
+        best_row = ranges.loc[ranges["rmse"].idxmin()]
+        ui.explain(
+            t("what_error_range") + " " + t("what_bias_range"),
+            t("insight_error_range").format(
+                worst=worst_row["Strength Range"],
+                worst_rmse=f"{worst_row['rmse']:.2f}",
+                best=best_row["Strength Range"],
+                best_rmse=f"{best_row['rmse']:.2f}",
+                bias=f"{worst_row['mean_error']:+.2f}",
+                direction=t("bias_under") if worst_row["mean_error"] > 0 else t("bias_over"),
+            ),
+        )
         st.info(t("perf_error_range_note"))
 
     worst = data.load_report_csv("top_worst_predictions.csv")
@@ -381,6 +444,18 @@ with tab_stability:
             yaxis=dict(visible=False, range=[0.85, 1.25]),
         )
         ui.chart(fig)
+        ui.explain(
+            t("what_robustness"),
+            t("insight_robustness").format(
+                mean=f"{robustness['mean_r2']:.3f}",
+                cv=f"{robustness['coefficient_of_variation'] * 100:.1f}",
+                low=f"{robustness['min_r2']:.3f}",
+                high=f"{robustness['max_r2']:.3f}",
+                verdict=t("stability_high")
+                if robustness["coefficient_of_variation"] < 0.05
+                else t("stability_low"),
+            ),
+        )
 
     significance = data.load_report_csv("statistical_significance_tests.csv")
     if not significance.empty:
@@ -394,7 +469,7 @@ with tab_stability:
                 orientation="h",
                 marker=dict(
                     color=[
-                        ui.STATUS["good"] if flag else "#c9c7c2"
+                        ui.STATUS["good"] if flag else ui.NEUTRAL_MARK
                         for flag in significance["significant_at_0.05"]
                     ],
                     line=dict(width=0),
@@ -422,6 +497,17 @@ with tab_stability:
         )
         ui.chart(fig)
 
+        ui.explain(
+            t("what_significance"),
+            t("insight_significance").format(
+                beaten=int(significance["significant_at_0.05"].sum()),
+                total=len(significance),
+                tied=", ".join(
+                    significance.loc[~significance["significant_at_0.05"], "competitor"]
+                )
+                or t("none_word"),
+            ),
+        )
         st.dataframe(
             significance.round(5), width="stretch", hide_index=True
         )

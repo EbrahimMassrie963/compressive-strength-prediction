@@ -8,6 +8,418 @@ place.
 from __future__ import annotations
 
 STRINGS: dict[str, str] = {
+    # --- dynamic insight templates -----------------------------------------
+    "training_range": "Training range",
+    "outside_range_short": "outside",
+    "none_word": "none",
+    "higher_than": "higher than",
+    "lower_than": "lower than",
+    "evidence_thin": (
+        "the model has thin evidence here, so treat the prediction with care"
+    ),
+    "evidence_solid": "the model has solid evidence in this region",
+    "wc_verdict_excellent": "excellent — high-strength territory",
+    "wc_verdict_good": "good — normal structural concrete",
+    "wc_verdict_moderate": "moderate — expect ordinary strength",
+    "wc_verdict_weak": "high — this alone will cap the strength",
+    "compare_verdict_tight": (
+        "Agreement this tight means the mix sits in well-covered training "
+        "territory"
+    ),
+    "compare_verdict_normal": (
+        "That spread is normal and roughly matches the models' own error bars"
+    ),
+    "compare_verdict_wide": (
+        "A spread this wide means the models are extrapolating differently \u2014 "
+        "treat any single number as provisional"
+    ),
+    "what_derived": (
+        "Ratios engineers read before they read any prediction. They are "
+        "computed from your inputs, not by the model, and they are the "
+        "quickest sanity check on a mix design."
+    ),
+    "insight_derived": (
+        "Your water/cement ratio is <strong>{wc}</strong> \u2014 {verdict}. "
+        "Total binder is <strong>{binder} kg/m\u00b3</strong>, and the mix "
+        "weighs <strong>{mass} kg/m\u00b3</strong> in total; normal-weight "
+        "concrete lands between 2,200 and 2,600."
+    ),
+    "insight_gauge": (
+        "At <strong>{value} MPa</strong> this mix reaches class "
+        "<strong>{cls}</strong> \u2014 {note}. The 90% interval runs {low} to "
+        "{high} MPa, a span of <strong>{width} MPa</strong>: that is the "
+        "honest precision of the prediction, and the number to quote when "
+        "someone asks how sure you are."
+    ),
+    "insight_gauge_extrapolated": (
+        "One or more inputs sit outside the training range, so the true "
+        "uncertainty is wider than the interval shown."
+    ),
+    "insight_sensitivity": (
+        "<strong>{top}</strong> moves this prediction most \u2014 a 10% change "
+        "shifts it by {delta} MPa. Increasing these raises predicted strength: "
+        "<strong>{helpers}</strong>. Increasing these lowers it: "
+        "<strong>{hurters}</strong>. Use it to decide which lever to pull "
+        "before you mix anything."
+    ),
+    "insight_sensitivity_inert": (
+        "<strong>{inert}</strong> does not move this prediction at all at "
+        "these values — a tree ensemble only responds where it placed a "
+        "split, so nudging them here changes nothing."
+    ),
+    "insight_compare": (
+        "The {n} models return {low} to {high} MPa, a spread of "
+        "<strong>{spread} MPa</strong>. {verdict}."
+    ),
+    "insight_percentile": (
+        "Your most unusual input is <strong>{feature}</strong>, at the "
+        "<strong>{percentile}th percentile</strong> \u2014 {comparison} {other}% "
+        "of the training mixes. {edges} of your inputs sit in the outer 5% of "
+        "their range, where the model is least tested."
+    ),
+    "insight_position_hist": (
+        "<strong>{nearby}</strong> of the {total} training specimens have a "
+        "{feature} within 10% of your {value} \u2014 {verdict}."
+    ),
+
+    # --- shared insight fragments -------------------------------------------
+    "direction_up": "rises with",
+    "direction_down": "falls as you add",
+    "direction_higher": "higher",
+    "direction_lower": "lower",
+    "bias_under": "reads low (under-predicts)",
+    "bias_over": "reads high (over-predicts)",
+    "bias_none": "shows no systematic bias",
+    "corr_strength_strong": "a strong linear link",
+    "corr_strength_moderate": "a moderate linear link",
+    "corr_strength_weak": "almost no linear link \u2014 which does not mean no link at all, only that a straight line cannot capture it",
+    "stability_high": "that is a very stable model",
+    "stability_low": "that is more variance than you want to see",
+    "learning_more_helps": "the curve was still climbing, so more data would still buy accuracy",
+    "learning_plateau": "the curve has flattened, so more of the same data would add little",
+    "sweep_monotone": "the response keeps climbing to the end of the range",
+    "sweep_peak": "the response peaks mid-range rather than climbing forever",
+    "agreement_yes": "All three methods put <strong>{feature}</strong> first",
+    "agreement_no": "The three methods disagree on the single top feature",
+    "stats_dist_note_shifted": (
+        "Users are exploring mixes stronger or weaker than the training "
+        "population, which is where predictions get less certain"
+    ),
+    "stats_dist_note_aligned": (
+        "Users are testing mixes much like the training population, which is "
+        "where the model is most reliable"
+    ),
+
+    # --- per-chart insights --------------------------------------------------
+    "insight_batch_dist": (
+        "The {span} MPa spread across this batch centres on <strong>{mean} "
+        "MPa</strong> (\u00b1{std} standard deviation), running from {low} to "
+        "{high} MPa."
+    ),
+    "insight_batch_class": (
+        "Most of the batch \u2014 <strong>{n} of {total}</strong> mixes \u2014 lands "
+        "in class <strong>{cls}</strong>, spread over {classes} classes in "
+        "total. {outside} rows used inputs outside the training range."
+    ),
+    "insight_target_hist": (
+        "Strength averages <strong>{mean} MPa</strong> (median {median}) and "
+        "runs from {low} to {high}. Only <strong>{share}%</strong> of "
+        "specimens exceed 60 MPa, which is exactly why the models are least "
+        "accurate at the high end."
+    ),
+    "insight_var_hist": (
+        "{name} has a median of <strong>{median}</strong> and spans {low} to "
+        "{high}. <strong>{zeros}%</strong> of mixes leave it out entirely "
+        "\u2014 {note}."
+    ),
+    "insight_var_zeros": (
+        "it is an optional ingredient, so the model has to learn both its "
+        "presence and its absence"
+    ),
+    "insight_var_nozeros": "it is present in nearly every mix",
+    "insight_scatter": (
+        "{name} shows {strength} with strength (r = <strong>{r}</strong>): "
+        "strength {direction} it. The curve is the fitted trend \u2014 the "
+        "vertical scatter around it is everything the other ingredients are "
+        "doing."
+    ),
+    "insight_temp_bands": (
+        "Mean strength falls from <strong>{coolest} MPa</strong> in the "
+        "coolest band to <strong>{hottest} MPa</strong> in the hottest, a "
+        "{drop} MPa ({pct}%) drop. The monotone decline confirms the "
+        "synthetic penalty was injected as specified."
+    ),
+    "insight_corr_matrix": (
+        "The strongest relationship in the whole matrix is <strong>{a}</strong> "
+        "against <strong>{b}</strong> at r = <strong>{r}</strong>. Strong "
+        "pairs among the inputs mean the ingredients are not independent "
+        "\u2014 changing one in practice usually changes another."
+    ),
+    "insight_corr_target": (
+        "<strong>{top}</strong> has the strongest linear tie to strength "
+        "(r = {r}). Positive drivers: {positive}. Negative drivers: {negative}."
+    ),
+    "insight_live_r2": (
+        "<strong>{best}</strong> leads with R\u00b2 = <strong>{r2}</strong> and "
+        "an RMSE of {rmse} MPa, and lands within \u00b15 MPa of the truth on "
+        "{within}% of held-out specimens. The whole field spans only {spread} "
+        "R\u00b2, so model choice matters far less here than data quality."
+    ),
+    "insight_residuals": (
+        "<strong>{model}</strong> is off by <strong>{mae} MPa</strong> on "
+        "average and lands within \u00b15 MPa on {within}% of specimens. Mean "
+        "residual is {bias} MPa, so the model {direction}. Its worst single "
+        "miss on this split is {worst} MPa."
+    ),
+    "insight_cv_board": (
+        "Tree ensembles dominate: <strong>{best}</strong> tops the {n} "
+        "algorithms at R\u00b2 = {r2}, against {linear} for linear regression. "
+        "The gap is the whole argument for a non-linear model on this problem."
+    ),
+    "insight_learning": (
+        "At full data the train\u2013validation gap is <strong>{gap}</strong> "
+        "R\u00b2, and the last increment of data added {gain} R\u00b2 \u2014 "
+        "{verdict}."
+    ),
+    "insight_error_range": (
+        "The model is weakest on <strong>{worst}</strong> mixes (RMSE {worst_rmse} "
+        "MPa) and strongest on <strong>{best}</strong> (RMSE {best_rmse}). In "
+        "the weak band the mean error is {bias} MPa, so it {direction} there "
+        "\u2014 useful to know before trusting a high-strength quote."
+    ),
+    "insight_robustness": (
+        "Mean R\u00b2 of <strong>{mean}</strong> with a coefficient of "
+        "variation of {cv}%, and no fold worse than {low} or better than "
+        "{high} \u2014 {verdict}."
+    ),
+    "insight_significance": (
+        "The champion significantly beats <strong>{beaten} of {total}</strong> "
+        "competitors at p &lt; 0.05. Statistically tied with: {tied}. A tie is "
+        "an honest result \u2014 it means the architectures are "
+        "indistinguishable on this dataset, not that the test failed."
+    ),
+    "insight_builtin": (
+        "<strong>{model}</strong> puts {share} of its total importance on "
+        "<strong>{top}</strong> alone. The top three ({top3}) account for "
+        "{top3share}, while <strong>{least}</strong> contributes least."
+    ),
+    "insight_ablation": (
+        "Deleting <strong>{top}</strong> costs <strong>{drop}</strong> R\u00b2 "
+        "\u2014 the model falls to {remaining} without it. Deleting "
+        "<strong>{least}</strong> costs only {least_drop}, so it is nearly "
+        "redundant given the others."
+    ),
+    "insight_shap": (
+        "<strong>{top}</strong> moves an individual prediction by "
+        "<strong>{mpa} MPa</strong> on average, ahead of {second} at "
+        "{second_mpa} MPa. Unlike a correlation, this is measured on the "
+        "model's actual behaviour, one specimen at a time."
+    ),
+    "insight_agreement": (
+        "{verdict}. Per method \u2014 {detail}. Three independent methods "
+        "agreeing is much harder to fool than any single importance ranking."
+    ),
+    "insight_sweep": (
+        "Sweeping <strong>{feature}</strong> alone moves the prediction by "
+        "<strong>{swing} MPa</strong> (from {low} to {high}), peaking around "
+        "<strong>{best}</strong> \u2014 {shape}."
+    ),
+    "insight_surface": (
+        "Across this grid the prediction ranges from {low} to <strong>{high} "
+        "MPa</strong>, with the strongest corner at {x} \u2248 {best_x} and "
+        "{y} \u2248 {best_y}. The shape of the gradient shows whether the two "
+        "ingredients reinforce each other or work independently."
+    ),
+    "insight_stats_time": (
+        "<strong>{total}</strong> predictions over {days} days, peaking at "
+        "{peak} in a single interval around {when}."
+    ),
+    "insight_stats_usage": (
+        "<strong>{model}</strong> is the most used model at {share}% of runs, "
+        "the {family} family is preferred, and activity peaks around "
+        "<strong>{hour}:00 UTC</strong>."
+    ),
+    "insight_stats_dist": (
+        "Predictions here average <strong>{user_mean} MPa</strong> against "
+        "{data_mean} MPa in the training data \u2014 {direction}. {note}."
+    ),
+    "insight_stats_class": (
+        "<strong>{cls}</strong> is the most requested class, {n} times "
+        "({share}% of all predictions), across {distinct} distinct classes."
+    ),
+    "insight_stats_input": (
+        "Users push <strong>{high}</strong> hardest, at {high_ratio}\u00d7 the "
+        "dataset average, and use the least <strong>{low}</strong> at "
+        "{low_ratio}\u00d7. Ratios far from 1.0 mark where real usage drifts "
+        "away from the training data."
+    ),
+    "insight_stats_accuracy": (
+        "On <strong>{n}</strong> reported measurements the model lands within "
+        "\u00b1{tolerance} MPa <strong>{hit}%</strong> of the time, with a mean "
+        "absolute error of {mae} MPa. Average signed error is {bias} MPa, so "
+        "in the field it {direction}."
+    ),
+
+    # --- chart explanations -------------------------------------------------
+    "explain_what": "What this shows",
+    "explain_insight": "Insight",
+    "what_gauge": (
+        "The predicted strength on a dial of EN 206 strength classes. The "
+        "bands run dark to bright as the class rises, the violet needle is "
+        "this mix, and the figure below it is the range the model is 90% "
+        "confident the real cylinder test would land in."
+    ),
+    "what_sensitivity": (
+        "Each ingredient raised and lowered by 10% on its own, with the rest "
+        "of the mix frozen, and the resulting change in predicted strength. "
+        "It is a what-if run on your exact mix, not a global average."
+    ),
+    "what_compare": (
+        "Your mix scored by every algorithm in the selected family. They were "
+        "trained on the same data but disagree in different regions of it."
+    ),
+    "what_percentile": (
+        "Where each of your inputs sits inside the 1,030 training mixes. 50% "
+        "is the median mix; 0% or 100% means you are at the edge of what the "
+        "model has ever seen."
+    ),
+    "what_position_hist": (
+        "The full training distribution of one ingredient, with your value "
+        "marked. Dense regions are where the model has the most evidence."
+    ),
+    "what_batch_dist": (
+        "How the predicted strengths in your uploaded file are spread out."
+    ),
+    "what_batch_class": (
+        "Your batch sorted into EN 206 strength classes \u2014 the "
+        "specification each mix would satisfy."
+    ),
+    "what_target_hist": (
+        "The distribution of measured compressive strength across all 1,030 "
+        "laboratory specimens. This is the quantity every model predicts."
+    ),
+    "what_var_hist": (
+        "How often each value of the selected variable occurs in the dataset."
+    ),
+    "what_var_box": (
+        "The same variable as a box plot: the box holds the middle half of "
+        "the data, the line is the median, and the dots beyond the whiskers "
+        "are statistical outliers."
+    ),
+    "what_scatter": (
+        "Every specimen plotted as the selected ingredient against its "
+        "measured strength, with a fitted quadratic trend."
+    ),
+    "what_temp_bands": (
+        "Mean measured strength in each curing-temperature band \u2014 the "
+        "check that the synthetic temperature variable behaves as designed."
+    ),
+    "what_corr_matrix": (
+        "Pearson correlation between every pair of variables. Blue is a "
+        "positive association, red a negative one, and the neutral grey "
+        "midpoint means no linear relationship. The same two colours mean the "
+        "same two things on every signed chart in this application."
+    ),
+    "what_corr_target": (
+        "Each ingredient's linear correlation with compressive strength, "
+        "ranked."
+    ),
+    "what_live_r2": (
+        "R\u00b2 of every served model on the same held-out test split, "
+        "computed in this session rather than read from a file. The "
+        "highlighted bars are the champion of each family."
+    ),
+    "what_pred_actual": (
+        "Each held-out specimen plotted as its measured strength against the "
+        "model's prediction. The diagonal is a perfect prediction; distance "
+        "from it is the error."
+    ),
+    "what_resid_hist": (
+        "The distribution of residuals (measured minus predicted). A "
+        "well-behaved model gives a narrow bell centred on zero."
+    ),
+    "what_resid_vs_pred": (
+        "Residuals against the predicted value. A flat, shapeless band means "
+        "the error does not depend on the size of the prediction; any tilt "
+        "or fan is systematic bias."
+    ),
+    "what_cv_board": (
+        "Twelve algorithms compared under identical 5-fold cross-validation "
+        "during the research phase. The bars show mean R\u00b2, the whiskers "
+        "its spread across folds."
+    ),
+    "what_learning": (
+        "Training and validation R\u00b2 as the training set grows. The gap "
+        "between the curves is overfitting; the slope of the validation curve "
+        "at the right edge says whether more data would still help."
+    ),
+    "what_error_range": (
+        "Prediction error split by how strong the specimen actually was. It "
+        "answers where the model is reliable and where it is not."
+    ),
+    "what_bias_range": (
+        "The average signed error per strength range. Positive means the "
+        "model reads low (under-predicts), negative means it reads high."
+    ),
+    "what_robustness": (
+        "The champion's R\u00b2 across 50 cross-validation folds: the full "
+        "range, the 95% confidence interval, and the mean. A tight interval "
+        "means the score is not an accident of one lucky split."
+    ),
+    "what_significance": (
+        "The champion's mean R\u00b2 minus each competitor's, over 50 matched "
+        "folds, with the paired t-test p-value. Highlighted bars are "
+        "statistically significant differences."
+    ),
+    "what_builtin": (
+        "How much each input the selected model actually uses, read straight "
+        "from the fitted model object."
+    ),
+    "what_ablation": (
+        "How much test R\u00b2 collapses when a feature is deleted and the "
+        "model retrained from scratch. The bluntest possible importance test."
+    ),
+    "what_shap": (
+        "Mean absolute SHAP value: the average number of MPa each feature "
+        "moves an individual prediction, in either direction."
+    ),
+    "what_agreement": (
+        "The three importance methods side by side, each rescaled to its own "
+        "maximum so the rankings can be compared rather than the units."
+    ),
+    "what_sweep": (
+        "One ingredient swept across its full training range while the rest "
+        "of the mix stays fixed, tracing the model's response curve."
+    ),
+    "what_surface": (
+        "Predicted strength over a grid of two ingredients, everything else "
+        "held constant. Bright regions are strong mixes."
+    ),
+    "what_stats_time": "Prediction volume through this deployment over time.",
+    "what_stats_model": "Which algorithms people actually run.",
+    "what_stats_family": (
+        "Whether users have a curing-temperature value to work with, or not."
+    ),
+    "what_stats_source": "Single-mix predictions against uploaded batches.",
+    "what_stats_hourly": "When the system is used, by hour of day in UTC.",
+    "what_stats_dist": (
+        "Predictions made here, overlaid on the distribution of the training "
+        "data. Both are drawn as densities so they compare on one scale."
+    ),
+    "what_stats_class": "Which EN 206 strength classes users are designing for.",
+    "what_stats_input": (
+        "Average value of each input across all predictions, divided by the "
+        "dataset average. 1.0 means users test mixes just like the training "
+        "data."
+    ),
+    "what_stats_accuracy": (
+        "Every laboratory measurement users reported back, plotted against "
+        "what the model had predicted. The diagonal is a perfect call."
+    ),
+    "what_stats_error": (
+        "The distribution of prediction error on those reported measurements."
+    ),
+
     "app_title": "Concrete Strength Predictor",
     "app_subtitle": (
         "Machine-learning prediction of concrete compressive strength from "

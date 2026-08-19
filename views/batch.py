@@ -226,6 +226,16 @@ if upload is not None:
             height=340,
         )
         ui.chart(fig)
+        ui.explain(
+            t("what_batch_dist"),
+            t("insight_batch_dist").format(
+                mean=f"{predictions.mean():.1f}",
+                std=f"{predictions.std():.1f}",
+                low=f"{predictions.min():.1f}",
+                high=f"{predictions.max():.1f}",
+                span=f"{predictions.max() - predictions.min():.1f}",
+            ),
+        )
 
     with right:
         class_order = [name for _, name, _ in config.STRENGTH_CLASSES]
@@ -250,6 +260,17 @@ if upload is not None:
             height=340,
         )
         ui.chart(fig)
+        top_class = counts.idxmax() if not counts.empty else "-"
+        ui.explain(
+            t("what_batch_class"),
+            t("insight_batch_class").format(
+                cls=top_class,
+                n=int(counts.max()) if not counts.empty else 0,
+                total=len(results),
+                classes=int(counts.notna().sum()),
+                outside=int(outside.sum()),
+            ),
+        )
 
     # Log the run once per (file, model) pair — the script re-executes on every
     # widget interaction, and a batch must not be counted twice.

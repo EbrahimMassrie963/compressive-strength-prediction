@@ -34,10 +34,10 @@ def run_prediction_flow(family: str) -> None:
     app.run()
     check(not app.exception, "page renders")
 
-    # Move a slider, then predict.
-    cement = next(s for s in app.slider if "Cement" in s.label)
+    # Type a value into the cement box, then predict.
+    cement = next(w for w in app.number_input if "Cement" in w.label)
     cement.set_value(450.0).run()
-    check(not app.exception, "slider interaction")
+    check(not app.exception, "number input accepted")
 
     button = next(b for b in app.button if "Predict" in b.label)
     button.click().run()
@@ -70,10 +70,14 @@ def run_extrapolation_warning() -> None:
     print("\n[extrapolation warning]")
     app = AppTest.from_file(str(APP_ROOT / "views/predict.py"), default_timeout=180)
     app.run()
-    cement = next(s for s in app.slider if "Cement" in s.label)
-    cement.set_value(cement.max).run()
+    cement = next(w for w in app.number_input if "Cement" in w.label)
+    cement.set_value(1200.0).run()
     check(not app.exception, "extreme input renders")
     check(len(app.warning) > 0, "out-of-range warning shown")
+    check(
+        any("outside" in str(m.value).lower() for m in app.markdown),
+        "per-input range hint flags the outlier",
+    )
 
 
 def run_batch_pipeline() -> None:
